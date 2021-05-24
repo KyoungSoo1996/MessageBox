@@ -29,14 +29,19 @@ public abstract class ScrollViewControl_Vertical<TUI, TData> : MonoBehaviour whe
     private float contentHeightSize;
     private float spacing;
 
+
     protected List<Transform> transformContents = new List<Transform>();
 
-    private List<TData> contentDatas { get; set; }
+    protected List<TData> contentDatas { get; set; }
+
+    public abstract void ArrangementList();
 
     public void Init()
     {
         InitScrollView();
     }
+
+
 
     public void SetData(List<TData> _Tdata)
     {
@@ -44,6 +49,22 @@ public abstract class ScrollViewControl_Vertical<TUI, TData> : MonoBehaviour whe
         setContentData(_Tdata);
         SetScrollView();
     }
+
+    public void UpdateData(List<TData> _Tdata)
+    {
+        if (dataCount <= transformContents.Count)
+        {
+            InitScrollView();
+            SetData(_Tdata);
+        }
+        else
+        {
+            setContentData(_Tdata);
+            SetUpdateScrollView();
+        }
+    }
+
+
 
     public void OnDragScrollView()
     {
@@ -53,6 +74,7 @@ public abstract class ScrollViewControl_Vertical<TUI, TData> : MonoBehaviour whe
         {
             DragScrollViewControl();
         }
+        SetUpdateScrollView();
     }
 
     private void ResetList()
@@ -79,7 +101,6 @@ public abstract class ScrollViewControl_Vertical<TUI, TData> : MonoBehaviour whe
         contentsCount = intervalIndex + marginCount * 2;
         spacing = transformView.GetComponent<VerticalLayoutGroup>().spacing;
         contentHeightSize = spacing + rectContentPrefabs.rect.height;
-        rectScrollView.anchoredPosition = new Vector2(0, 0);
     }
 
     private void SetScrollView()
@@ -96,6 +117,21 @@ public abstract class ScrollViewControl_Vertical<TUI, TData> : MonoBehaviour whe
             transformContents[i % endIndex].GetComponent<TUI>().SetData(contentDatas[i]);
         }
     }
+
+    private void SetUpdateScrollView()
+    {
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            if (viewStartIndex <= i && i <= viewEndIndex)
+            {
+                transformContents[i % contentsCount].GetComponent<TUI>().InitData();
+                transformContents[i % contentsCount].GetComponent<TUI>().SetData(contentDatas[i]);
+            }
+            RectTransform _rect = transformContents[i % contentsCount].GetComponent<RectTransform>();
+            _rect.anchoredPosition = new Vector2(_rect.anchoredPosition.x, -(i * contentHeightSize) - spacing);
+        }
+    }
+
 
     private void DragScrollViewControl()
     {
@@ -123,3 +159,4 @@ public abstract class ScrollViewControl_Vertical<TUI, TData> : MonoBehaviour whe
         }
     }
 }
+

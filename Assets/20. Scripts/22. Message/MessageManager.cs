@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MessageManager : ScrollViewControl_Vertical<MessageGroupContent, MessageData>
 {
+    [SerializeField] private Scrollbar scrollbar;
     void Awake()
     {
         Init();
-        Debug.Log(TimeUtils.Inst.GetCurrentTimetoStr());
     }
 
     List<MessageData> MessageDatas = new List<MessageData>();
@@ -25,5 +26,11 @@ public class MessageManager : ScrollViewControl_Vertical<MessageGroupContent, Me
             }
         }
         SetData(MessageDatas);
+    }
+
+
+    public override void ArrangementList()
+    {
+        scrollbar.value = 0;
     }
 }
