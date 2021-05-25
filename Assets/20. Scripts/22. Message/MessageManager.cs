@@ -26,6 +26,7 @@ public class MessageManager : ScrollViewControl_Vertical<MessageGroupContent, Me
             }
         }
         SetData(MessageDatas);
+        ArrangementList();
     }
 
 

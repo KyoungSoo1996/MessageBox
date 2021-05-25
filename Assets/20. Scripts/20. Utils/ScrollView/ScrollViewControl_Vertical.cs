@@ -147,8 +147,8 @@ public abstract class ScrollViewControl_Vertical<TUI, TData> : MonoBehaviour whe
         }
         if (viewPrevIndex <= viewStartIndex)
         {
-            startIndex = Mathf.Clamp(viewStartIndex + 1, 0, dataCount);
-            endIndex = Mathf.Clamp(viewEndIndex + 1, 0, dataCount);
+            startIndex = Mathf.Clamp(viewStartIndex, 0, dataCount);
+            endIndex = Mathf.Clamp(viewEndIndex, 0, dataCount);
             viewPrevIndex = viewStartIndex;
         }
         else

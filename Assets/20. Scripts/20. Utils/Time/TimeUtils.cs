@@ -68,7 +68,6 @@ public class TimeUtils : MonoBehaviour
     // 현재 시간을 string으로 출력하기
     public DateTime GetCurrentTimetoStr()
     {
-        Debug.Log(currentTime);
         DateTime resultTime;
         if (currentTime == default(DateTime))
         {
