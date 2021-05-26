@@ -4,14 +4,8 @@ using System.Net;
 using System.Globalization;
 using System.Collections;
 
-public class TimeUtils : MonoBehaviour
+public class TimeUtils : MonoSingleton<TimeUtils>
 {
-    public static TimeUtils Inst = null;
-    private void Awake()
-    {
-        if (Inst == null) Inst = this;
-    }
-
     int timeCount = 0;
     DateTime currentTime = default(DateTime);
 

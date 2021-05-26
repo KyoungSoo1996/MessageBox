@@ -3,18 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class SheetIndexData
-{
-    public string URL;
-    public int Index;
-}
-
 public class ChatData
 {
-    public int time;
+    public string time;
     public string name;
     public string message;
-    public ChatData SetData(int _time, string _name, string _message)
+    public ChatData SetData(string _time, string _name, string _message)
     {
         ChatData result = new ChatData();
         result.time = _time;
@@ -24,44 +18,40 @@ public class ChatData
     }
 }
 
-public class SheetChatDatas
+public class GoogleSheetManager : MonoSingleton<GoogleSheetManager>
 {
-    public string URL;
+    public List<ChatData> ServerChatDatas = new List<ChatData>();
+    public MessageManager messageManager;
 
-}
 
-public class GoogleSheetManager : MonoBehaviour
-{
     private string chatStartIndexURL = "https://docs.google.com/spreadsheets/d/1AnI6_cYhFI6w40gW4UqtIBE7GWhAvpRsP4QGGB2CeR8/export?gid=0&format=tsv&range=D2:D2";
     private string chatEndIndexURL = "https://docs.google.com/spreadsheets/d/1AnI6_cYhFI6w40gW4UqtIBE7GWhAvpRsP4QGGB2CeR8/export?gid=0&format=tsv&range=E2:E2";
-    private string ChattingURL = "https://script.google.com/macros/s/AKfycbyiPF0CgaPpi7aAWJP0LdWjSSMsuiwqmov3IH5wIgwr3Jv-32sxDF-Fu1gS0ezJnIC3/exec";
+    private string ChattingsURL = "https://script.google.com/macros/s/AKfycbyiPF0CgaPpi7aAWJP0LdWjSSMsuiwqmov3IH5wIgwr3Jv-32sxDF-Fu1gS0ezJnIC3/exec";
 
     string startIndex ="0", endIndex ="0";
+
 
     private void Start()
     {
         StartCoroutine(GetGoogleStartIndexData());
         StartCoroutine(GetGoogleEndIndexData());
-        StartCoroutine(GetGoogleChatData());
-        ChatPost("hello", "world!");
+        StartCoroutine(GetGoogleChatDatas());
     }
 
-    private IEnumerator GetGoogleChatData()
+    private IEnumerator GetGoogleChatDatas()
     {
         while (true)
         {
-            Debug.Log("wait");
             if (startIndex != "0" && endIndex != "0")
             {
-                Debug.Log(startIndex);
-                Debug.Log(endIndex);
                 WWWForm form = new WWWForm();
                 using (UnityWebRequest www = UnityWebRequest.Get($"https://docs.google.com/spreadsheets/d/1AnI6_cYhFI6w40gW4UqtIBE7GWhAvpRsP4QGGB2CeR8/export?gid=0&format=tsv&range=A{startIndex}:C{endIndex}"))
                 {
                     yield return www.SendWebRequest();
                     if (www.isDone)
                     {
-                        Debug.Log(www.downloadHandler.text);
+                        ServerChatDatas = TSVReader.Inst.Read(www.downloadHandler.text);
+                        messageManager.SetChats(ServerChatDatas);
                     }
                 }
                 yield break;
@@ -104,9 +94,10 @@ public class GoogleSheetManager : MonoBehaviour
         form.AddField("message", _message);
         StartCoroutine(Post(form));
     }
-    IEnumerator Post(WWWForm form)
+
+    public IEnumerator Post(WWWForm form)
     {
-        using (UnityWebRequest www = UnityWebRequest.Post(ChattingURL, form))
+        using (UnityWebRequest www = UnityWebRequest.Post(ChattingsURL, form))
         {
             yield return www.SendWebRequest();
         }
