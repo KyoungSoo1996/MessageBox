@@ -50,6 +50,11 @@ public abstract class ScrollViewControl_Vertical<TUI, TData> : MonoBehaviour whe
         SetScrollView();
     }
 
+    private void Update()
+    {
+        SetUpdateScrollView();
+    }
+
     public void UpdateData(List<TData> _Tdata)
     {
         if (dataCount <= transformContents.Count)
@@ -60,7 +65,8 @@ public abstract class ScrollViewControl_Vertical<TUI, TData> : MonoBehaviour whe
         else
         {
             setContentData(_Tdata);
-            SetUpdateScrollView();
+            rectScrollView.sizeDelta = new Vector2(rectScrollView.sizeDelta.x, (contentHeightSize * dataCount) + spacing);
+            OnDragScrollView();
         }
     }
 
@@ -76,6 +82,7 @@ public abstract class ScrollViewControl_Vertical<TUI, TData> : MonoBehaviour whe
         }
         SetUpdateScrollView();
     }
+
 
     private void ResetList()
     {
